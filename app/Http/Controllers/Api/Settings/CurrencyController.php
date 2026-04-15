@@ -1,34 +1,77 @@
 <?php
 
-namespace App\Http\Controllers\Api\Categories;
+namespace App\Http\Controllers\Api\Settings;
 
 use App\Http\Controllers\Controller;
+use App\Models\Currency;
+use App\Models\Setting;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
-class CategoryController extends Controller
+class CurrencyController extends Controller
 {
+    /**
+     * Currencies
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        return response()->json([
-            'categories' => [
-                [
-                    'id' => 1,
-                    'name' => 'Slots',
-                    'slug' => 'slots',
-                    'image' => '/assets/images/wager_1_6ec39cf4.png',
-                ],
-                [
-                    'id' => 2,
-                    'name' => 'Live Casino',
-                    'slug' => 'live-casino',
-                    'image' => '/assets/images/wager_2_8af53176.png',
-                ],
-                [
-                    'id' => 3,
-                    'name' => 'Crash',
-                    'slug' => 'crash',
-                    'image' => '/assets/images/wager_3_ee25b52f.png',
-                ],
-            ]
-        ], 200);
+        $currencies = null;
+        if(Cache::has('currencies')) {
+            $currencies = Cache::get('currencies');
+        }else{
+            $currencies = Currency::first();
+            Cache::put('currencies', $currencies);
+        }
+
+        return response()->json(['currencies' => $currencies], 200);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        //
     }
 }
