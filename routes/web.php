@@ -14,6 +14,17 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |Sme
 */
+Route::get('/', function () {
+    return response()->json([
+        'ok' => true,
+        'service' => 'ViperPro Backend API',
+        'status' => 'running',
+        'health' => '/healthz.txt',
+        'admin' => '/admin',
+        'api_base' => '/api',
+    ], 200);
+});
+
 Route::get('loadinggame', function () {
     return response('OK', 200);
 });
@@ -45,4 +56,3 @@ include_once(__DIR__ . '/groups/auth/social.php');
 
 // APP
 include_once(__DIR__ . '/groups/layouts/app.php');
-
