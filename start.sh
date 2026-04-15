@@ -2,7 +2,7 @@
 set -e
 
 if [ ! -f .env ]; then
-  cp .env.example .env
+  touch .env
 fi
 
 php artisan package:discover --ansi || true
