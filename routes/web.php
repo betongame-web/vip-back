@@ -14,8 +14,8 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |Sme
 */
-Route::get('loadinggame', function() {
-
+Route::get('loadinggame', function () {
+    return response('OK', 200);
 });
 
 Route::get('test', [\App\Http\Controllers\Provider\VibraController::class, 'start']);
