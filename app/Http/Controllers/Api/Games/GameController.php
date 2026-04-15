@@ -286,30 +286,38 @@ class GameController extends Controller
 
     public function sourceProvider(Request $request, $token, $action)
     {
-        $tokenOpen = \Helper::DecToken($token);
-        $validEndpoints = ['session', 'icons', 'spin', 'freenum'];
+        try {
+            $tokenOpen = \Helper::DecToken($token);
+            $validEndpoints = ['session', 'icons', 'spin', 'freenum'];
 
-        if (in_array($action, $validEndpoints)) {
-            if (isset($tokenOpen['status']) && $tokenOpen['status']) {
-                $game = Game::whereStatus(1)->where('game_code', $tokenOpen['game'])->first();
-                if (!empty($game)) {
-                    $controller = \Helper::createController($game->game_code);
+            if (in_array($action, $validEndpoints, true)) {
+                if (isset($tokenOpen['status']) && $tokenOpen['status']) {
+                    $game = Game::whereStatus(1)->where('game_code', $tokenOpen['game'])->first();
 
-                    switch ($action) {
-                        case 'session':
-                            return $controller->session($token);
-                        case 'spin':
-                            return $controller->spin($request, $token);
-                        case 'freenum':
-                            return $controller->freenum($request, $token);
-                        case 'icons':
-                            return $controller->icons();
+                    if (!empty($game)) {
+                        $controller = \Helper::createController($game->game_code);
+
+                        switch ($action) {
+                            case 'session':
+                                return $controller->session($token);
+                            case 'spin':
+                                return $controller->spin($request, $token);
+                            case 'freenum':
+                                return $controller->freenum($request, $token);
+                            case 'icons':
+                                return $controller->icons();
+                        }
                     }
                 }
             }
-        }
 
-        return response()->json([], 500);
+            return response()->json([], 500);
+        } catch (Throwable $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Source provider fallback unavailable',
+            ], 500);
+        }
     }
 
     public function toggleFavorite($id)
@@ -322,7 +330,10 @@ class GameController extends Controller
 
                 if (!empty($checkExist)) {
                     if ($checkExist->delete()) {
-                        return response()->json(['status' => true, 'message' => 'Removed successfully'], 200);
+                        return response()->json([
+                            'status' => true,
+                            'message' => 'Removed successfully',
+                        ], 200);
                     }
                 } else {
                     $gameFavoriteCreate = GameFavorite::create([
@@ -331,12 +342,18 @@ class GameController extends Controller
                     ]);
 
                     if ($gameFavoriteCreate) {
-                        return response()->json(['status' => true, 'message' => 'Created successfully'], 200);
+                        return response()->json([
+                            'status' => true,
+                            'message' => 'Created successfully',
+                        ], 200);
                     }
                 }
             }
 
-            return response()->json(['status' => false, 'message' => 'Unauthorized'], 401);
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized',
+            ], 401);
         } catch (Throwable $e) {
             return response()->json([
                 'status' => true,
@@ -356,7 +373,10 @@ class GameController extends Controller
 
                 if (!empty($checkExist)) {
                     if ($checkExist->delete()) {
-                        return response()->json(['status' => true, 'message' => 'Removed successfully'], 200);
+                        return response()->json([
+                            'status' => true,
+                            'message' => 'Removed successfully',
+                        ], 200);
                     }
                 } else {
                     $gameLikeCreate = GameLike::create([
@@ -365,12 +385,18 @@ class GameController extends Controller
                     ]);
 
                     if ($gameLikeCreate) {
-                        return response()->json(['status' => true, 'message' => 'Created successfully'], 200);
+                        return response()->json([
+                            'status' => true,
+                            'message' => 'Created successfully',
+                        ], 200);
                     }
                 }
             }
 
-            return response()->json(['status' => false, 'message' => 'Unauthorized'], 401);
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized',
+            ], 401);
         } catch (Throwable $e) {
             return response()->json([
                 'status' => true,
@@ -437,7 +463,10 @@ class GameController extends Controller
                                     ], 200);
                                 }
 
-                                return response()->json(['error' => $fiversLaunch, 'status' => false], 400);
+                                return response()->json([
+                                    'error' => $fiversLaunch,
+                                    'status' => false,
+                                ], 400);
 
                             case 'games2_api':
                                 $games2ApiLaunch = self::GameLaunchGames2($game->provider->code, $game->game_id, 'pt', auth('api')->id());
@@ -450,7 +479,10 @@ class GameController extends Controller
                                     ], 200);
                                 }
 
-                                return response()->json(['error' => $games2ApiLaunch, 'status' => false], 400);
+                                return response()->json([
+                                    'error' => $games2ApiLaunch,
+                                    'status' => false,
+                                ], 400);
 
                             case 'worldslot':
                                 $worldslotLaunch = self::GameLaunchWorldSlot($game->provider->code, $game->game_id, 'pt', auth('api')->id());
@@ -463,7 +495,10 @@ class GameController extends Controller
                                     ], 200);
                                 }
 
-                                return response()->json(['error' => $worldslotLaunch, 'status' => false], 400);
+                                return response()->json([
+                                    'error' => $worldslotLaunch,
+                                    'status' => false,
+                                ], 400);
                         }
                     }
 
@@ -480,7 +515,10 @@ class GameController extends Controller
                 ], 400);
             }
 
-            return response()->json(['error' => '', 'status' => false], 400);
+            return response()->json([
+                'error' => '',
+                'status' => false,
+            ], 400);
         } catch (Throwable $e) {
             $game = $this->fallbackSingleGame($id);
 
@@ -524,7 +562,7 @@ class GameController extends Controller
         } catch (Throwable $e) {
             return response()->json([
                 'games' => $this->fallbackGamesPaginated($request),
-              'fallback' => true,
+                'fallback' => true,
             ], 200);
         }
     }
