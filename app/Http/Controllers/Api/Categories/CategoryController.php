@@ -14,19 +14,19 @@ class CategoryController extends Controller
                     'id' => 1,
                     'name' => 'Slots',
                     'slug' => 'slots',
-                    'image' => '/assets/images/wager_1_6ec39cf4.png',
+                    'image' => '/favicon.ico',
                 ],
                 [
                     'id' => 2,
-                    'name' => 'Live Casino',
-                    'slug' => 'live-casino',
-                    'image' => '/assets/images/wager_2_8af53176.png',
+                    'name' => 'Originals',
+                    'slug' => 'originals',
+                    'image' => '/favicon.ico',
                 ],
                 [
                     'id' => 3,
-                    'name' => 'Crash',
-                    'slug' => 'crash',
-                    'image' => '/assets/images/wager_3_ee25b52f.png',
+                    'name' => 'Popular',
+                    'slug' => 'popular',
+                    'image' => '/favicon.ico',
                 ],
             ]
         ], 200);
