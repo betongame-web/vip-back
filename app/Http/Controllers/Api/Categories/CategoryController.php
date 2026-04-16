@@ -14,19 +14,19 @@ class CategoryController extends Controller
                     'id' => 1,
                     'name' => 'Slots',
                     'slug' => 'slots',
-                    'image' => '/favicon.ico',
+                    'image' => url('/favicon.ico'),
                 ],
                 [
                     'id' => 2,
                     'name' => 'Originals',
                     'slug' => 'originals',
-                    'image' => '/favicon.ico',
+                    'image' => url('/favicon.ico'),
                 ],
                 [
                     'id' => 3,
                     'name' => 'Popular',
                     'slug' => 'popular',
-                    'image' => '/favicon.ico',
+                    'image' => url('/favicon.ico'),
                 ],
             ]
         ], 200);
