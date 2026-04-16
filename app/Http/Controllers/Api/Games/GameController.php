@@ -182,7 +182,9 @@ class GameController extends Controller
 
     protected function fallbackSingleGame(string $id): array
     {
-        $games = collect($this->originalGameMap())->keyBy(fn ($item) => (string) $item['id'])->toArray();
+        $games = collect($this->originalGameMap())
+            ->keyBy(fn ($item) => (string) $item['id'])
+            ->toArray();
 
         $base = $games[$id] ?? $games['101'];
 
@@ -287,7 +289,9 @@ class GameController extends Controller
 
             if (in_array($action, $validEndpoints, true)) {
                 if (isset($tokenOpen['status']) && $tokenOpen['status']) {
-                    $game = Game::whereStatus(1)->where('game_code', $tokenOpen['game'])->first();
+                    $game = Game::whereStatus(1)
+                        ->where('game_code', $tokenOpen['game'])
+                        ->first();
 
                     if (!empty($game)) {
                         $controller = \Helper::createController($game->game_code);
@@ -322,7 +326,10 @@ class GameController extends Controller
 
                 if (!empty($checkExist)) {
                     if ($checkExist->delete()) {
-                        return response()->json(['status' => true, 'message' => 'Removed successfully'], 200);
+                        return response()->json([
+                            'status' => true,
+                            'message' => 'Removed successfully',
+                        ], 200);
                     }
                 } else {
                     $gameFavoriteCreate = GameFavorite::create([
@@ -331,12 +338,18 @@ class GameController extends Controller
                     ]);
 
                     if ($gameFavoriteCreate) {
-                        return response()->json(['status' => true, 'message' => 'Created successfully'], 200);
+                        return response()->json([
+                            'status' => true,
+                            'message' => 'Created successfully',
+                        ], 200);
                     }
                 }
             }
 
-            return response()->json(['status' => false, 'message' => 'Unauthorized'], 401);
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized',
+            ], 401);
         } catch (Throwable $e) {
             return response()->json([
                 'status' => true,
@@ -356,7 +369,10 @@ class GameController extends Controller
 
                 if (!empty($checkExist)) {
                     if ($checkExist->delete()) {
-                        return response()->json(['status' => true, 'message' => 'Removed successfully'], 200);
+                        return response()->json([
+                            'status' => true,
+                            'message' => 'Removed successfully',
+                        ], 200);
                     }
                 } else {
                     $gameLikeCreate = GameLike::create([
@@ -365,12 +381,18 @@ class GameController extends Controller
                     ]);
 
                     if ($gameLikeCreate) {
-                        return response()->json(['status' => true, 'message' => 'Created successfully'], 200);
+                        return response()->json([
+                            'status' => true,
+                            'message' => 'Created successfully',
+                        ], 200);
                     }
                 }
             }
 
-            return response()->json(['status' => false, 'message' => 'Unauthorized'], 401);
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized',
+            ], 401);
         } catch (Throwable $e) {
             return response()->json([
                 'status' => true,
@@ -383,7 +405,9 @@ class GameController extends Controller
     public function show(string $id)
     {
         try {
-            $game = Game::with(['categories', 'provider'])->whereStatus(1)->find($id);
+            $game = Game::with(['categories', 'provider'])
+                ->whereStatus(1)
+                ->find($id);
 
             if (!empty($game) && auth('api')->check()) {
                 $wallet = Wallet::where('user_id', auth('api')->id())->first();
@@ -437,7 +461,10 @@ class GameController extends Controller
             }
 
             if (isset($request->searchTerm) && !empty($request->searchTerm) && strlen($request->searchTerm) > 2) {
-                $query->whereLike(['game_code', 'game_name', 'description', 'distribution', 'provider.name'], $request->searchTerm);
+                $query->whereLike(
+                    ['game_code', 'game_name', 'description', 'distribution', 'provider.name'],
+                    $request->searchTerm
+                );
             } else {
                 $query->orderBy('views', 'desc');
             }
