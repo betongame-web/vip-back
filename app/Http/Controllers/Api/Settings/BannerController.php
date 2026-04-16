@@ -14,14 +14,14 @@ class BannerController extends Controller
                     'id' => 1,
                     'title' => 'Main Banner',
                     'type' => 'carousel',
-                    'image' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
+                    'image' => url('/assets/images/invite_bg_m.bafe1d0e.png'),
                     'link' => '/casinos',
                 ],
                 [
                     'id' => 2,
                     'title' => 'Home Banner',
                     'type' => 'home',
-                    'image' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
+                    'image' => url('/assets/images/invite_bg_m.bafe1d0e.png'),
                     'link' => '/sports',
                 ],
             ]
