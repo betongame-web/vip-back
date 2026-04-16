@@ -15,7 +15,7 @@ class SearchGameController extends Controller
                 'game_name' => 'Fortune Tiger',
                 'slug' => 'fortune-tiger',
                 'game_code' => 'fortunetiger',
-                'cover' => '/favicon.ico',
+                'cover' => url('/favicon.ico'),
                 'provider' => [
                     'id' => 1,
                     'name' => 'Original Games',
@@ -27,7 +27,7 @@ class SearchGameController extends Controller
                 'game_name' => 'Fortune Rabbit',
                 'slug' => 'fortune-rabbit',
                 'game_code' => 'fortunerabbit',
-                'cover' => '/favicon.ico',
+                'cover' => url('/favicon.ico'),
                 'provider' => [
                     'id' => 1,
                     'name' => 'Original Games',
@@ -39,7 +39,7 @@ class SearchGameController extends Controller
                 'game_name' => 'Fortune Ox',
                 'slug' => 'fortune-ox',
                 'game_code' => 'fortuneox',
-                'cover' => '/favicon.ico',
+                'cover' => url('/favicon.ico'),
                 'provider' => [
                     'id' => 1,
                     'name' => 'Original Games',
@@ -51,7 +51,7 @@ class SearchGameController extends Controller
                 'game_name' => 'Fortune Panda',
                 'slug' => 'fortune-panda',
                 'game_code' => 'fortunepanda',
-                'cover' => '/favicon.ico',
+                'cover' => url('/favicon.ico'),
                 'provider' => [
                     'id' => 1,
                     'name' => 'Original Games',
@@ -63,7 +63,7 @@ class SearchGameController extends Controller
                 'game_name' => 'Fortune Mouse',
                 'slug' => 'fortune-mouse',
                 'game_code' => 'fortunemouse',
-                'cover' => '/favicon.ico',
+                'cover' => url('/favicon.ico'),
                 'provider' => [
                     'id' => 1,
                     'name' => 'Original Games',
@@ -75,7 +75,7 @@ class SearchGameController extends Controller
                 'game_name' => 'Treasures of Aztec',
                 'slug' => 'treasures-of-aztec',
                 'game_code' => 'treasuresofaztec',
-                'cover' => '/favicon.ico',
+                'cover' => url('/favicon.ico'),
                 'provider' => [
                     'id' => 1,
                     'name' => 'Original Games',
@@ -87,7 +87,7 @@ class SearchGameController extends Controller
                 'game_name' => 'Phoenix Rises',
                 'slug' => 'phoenix-rises',
                 'game_code' => 'phoenixrises',
-                'cover' => '/favicon.ico',
+                'cover' => url('/favicon.ico'),
                 'provider' => [
                     'id' => 2,
                     'name' => 'Special Originals',
@@ -99,7 +99,7 @@ class SearchGameController extends Controller
                 'game_name' => 'Queen of Bounty',
                 'slug' => 'queen-of-bounty',
                 'game_code' => 'queenofbounty',
-                'cover' => '/favicon.ico',
+                'cover' => url('/favicon.ico'),
                 'provider' => [
                     'id' => 2,
                     'name' => 'Special Originals',
@@ -111,7 +111,7 @@ class SearchGameController extends Controller
                 'game_name' => 'Jack Frost',
                 'slug' => 'jack-frost',
                 'game_code' => 'jackfrost',
-                'cover' => '/favicon.ico',
+                'cover' => url('/favicon.ico'),
                 'provider' => [
                     'id' => 2,
                     'name' => 'Special Originals',
@@ -123,7 +123,7 @@ class SearchGameController extends Controller
                 'game_name' => 'Songkran Party',
                 'slug' => 'songkran-party',
                 'game_code' => 'songkranparty',
-                'cover' => '/favicon.ico',
+                'cover' => url('/favicon.ico'),
                 'provider' => [
                     'id' => 2,
                     'name' => 'Special Originals',
@@ -135,7 +135,7 @@ class SearchGameController extends Controller
                 'game_name' => 'Bikini Paradise',
                 'slug' => 'bikini-paradise',
                 'game_code' => 'bikiniparadise',
-                'cover' => '/favicon.ico',
+                'cover' => url('/favicon.ico'),
                 'provider' => [
                     'id' => 2,
                     'name' => 'Special Originals',
@@ -147,7 +147,7 @@ class SearchGameController extends Controller
                 'game_name' => 'Hood vs Woolf',
                 'slug' => 'hood-vs-woolf',
                 'game_code' => 'hoodvswoolf',
-                'cover' => '/favicon.ico',
+                'cover' => url('/favicon.ico'),
                 'provider' => [
                     'id' => 2,
                     'name' => 'Special Originals',
