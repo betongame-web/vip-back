@@ -21,99 +21,160 @@ class GameController extends Controller
 {
     use KaGamingTrait, FiversTrait, VibraTrait, SalsaGamesTrait, WorldSlotTrait, Games2ApiTrait;
 
-    protected function fallbackProviders(): array
+    protected function fallbackCover(): string
+    {
+        return url('/assets/images/FortuneTiger.webp');
+    }
+
+    protected function originalGameMap(): array
     {
         return [
             [
-                'id' => 1,
-                'name' => 'Pragmatic Play',
-                'slug' => 'pragmatic-play',
-                'games' => [
-                    [
-                        'id' => 101,
-                        'game_name' => 'Sweet Bonanza',
-                        'slug' => 'sweet-bonanza',
-                        'game_code' => 'sweet-bonanza',
-                        'cover' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
-                        'provider' => [
-                            'id' => 1,
-                            'name' => 'Pragmatic Play',
-                            'slug' => 'pragmatic-play',
-                        ],
-                    ],
-                    [
-                        'id' => 102,
-                        'game_name' => 'Gates of Olympus',
-                        'slug' => 'gates-of-olympus',
-                        'game_code' => 'gates-of-olympus',
-                        'cover' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
-                        'provider' => [
-                            'id' => 1,
-                            'name' => 'Pragmatic Play',
-                            'slug' => 'pragmatic-play',
-                        ],
-                    ],
+                'id' => 101,
+                'game_name' => 'Fortune Tiger',
+                'slug' => 'fortune-tiger',
+                'game_code' => 'fortunetiger',
+            ],
+            [
+                'id' => 102,
+                'game_name' => 'Fortune Rabbit',
+                'slug' => 'fortune-rabbit',
+                'game_code' => 'fortunerabbit',
+            ],
+            [
+                'id' => 103,
+                'game_name' => 'Fortune Ox',
+                'slug' => 'fortune-ox',
+                'game_code' => 'fortuneox',
+            ],
+            [
+                'id' => 104,
+                'game_name' => 'Fortune Panda',
+                'slug' => 'fortune-panda',
+                'game_code' => 'fortunepanda',
+            ],
+            [
+                'id' => 105,
+                'game_name' => 'Fortune Mouse',
+                'slug' => 'fortune-mouse',
+                'game_code' => 'fortunemouse',
+            ],
+            [
+                'id' => 106,
+                'game_name' => 'Treasures of Aztec',
+                'slug' => 'treasures-of-aztec',
+                'game_code' => 'treasuresofaztec',
+            ],
+            [
+                'id' => 201,
+                'game_name' => 'Phoenix Rises',
+                'slug' => 'phoenix-rises',
+                'game_code' => 'phoenixrises',
+            ],
+            [
+                'id' => 202,
+                'game_name' => 'Queen of Bounty',
+                'slug' => 'queen-of-bounty',
+                'game_code' => 'queenofbounty',
+            ],
+            [
+                'id' => 203,
+                'game_name' => 'Jack Frost',
+                'slug' => 'jack-frost',
+                'game_code' => 'jackfrost',
+            ],
+            [
+                'id' => 204,
+                'game_name' => 'Songkran Party',
+                'slug' => 'songkran-party',
+                'game_code' => 'songkranparty',
+            ],
+            [
+                'id' => 205,
+                'game_name' => 'Bikini Paradise',
+                'slug' => 'bikini-paradise',
+                'game_code' => 'bikiniparadise',
+            ],
+            [
+                'id' => 206,
+                'game_name' => 'Hood vs Woolf',
+                'slug' => 'hood-vs-woolf',
+                'game_code' => 'hoodvswoolf',
+            ],
+        ];
+    }
+
+    protected function fallbackProviders(): array
+    {
+        $games = $this->originalGameMap();
+
+        $providerA = [];
+        $providerB = [];
+
+        foreach ($games as $index => $game) {
+            $payload = [
+                ...$game,
+                'cover' => $this->fallbackCover(),
+                'provider' => [
+                    'id' => $index < 6 ? 1 : 2,
+                    'name' => $index < 6 ? 'Original Slots A' : 'Original Slots B',
+                    'slug' => $index < 6 ? 'original-slots-a' : 'original-slots-b',
                 ],
+            ];
+
+            if ($index < 6) {
+                $providerA[] = $payload;
+            } else {
+                $providerB[] = $payload;
+            }
+        }
+
+        return [
+            [
+                'id' => 1,
+                'name' => 'Original Slots A',
+                'slug' => 'original-slots-a',
+                'games' => $providerA,
             ],
             [
                 'id' => 2,
-                'name' => 'PG Soft',
-                'slug' => 'pg-soft',
-                'games' => [
-                    [
-                        'id' => 201,
-                        'game_name' => 'Fortune Tiger',
-                        'slug' => 'fortune-tiger',
-                        'game_code' => 'fortune-tiger',
-                        'cover' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
-                        'provider' => [
-                            'id' => 2,
-                            'name' => 'PG Soft',
-                            'slug' => 'pg-soft',
-                        ],
-                    ],
-                    [
-                        'id' => 202,
-                        'game_name' => 'Fortune Rabbit',
-                        'slug' => 'fortune-rabbit',
-                        'game_code' => 'fortune-rabbit',
-                        'cover' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
-                        'provider' => [
-                            'id' => 2,
-                            'name' => 'PG Soft',
-                            'slug' => 'pg-soft',
-                        ],
-                    ],
-                ],
+                'name' => 'Original Slots B',
+                'slug' => 'original-slots-b',
+                'games' => $providerB,
             ],
         ];
     }
 
     protected function fallbackFeaturedGames(): array
     {
+        $games = $this->originalGameMap();
+
         return [
             [
-                'id' => 101,
-                'game_name' => 'Sweet Bonanza',
-                'slug' => 'sweet-bonanza',
-                'game_code' => 'sweet-bonanza',
-                'cover' => '/assets/images/invite_bg_m_bafe1d0e.png',
+                ...$games[0],
+                'cover' => $this->fallbackCover(),
                 'provider' => [
                     'id' => 1,
-                    'name' => 'Pragmatic Play',
-                    'slug' => 'pragmatic-play',
+                    'name' => 'Original Slots A',
+                    'slug' => 'original-slots-a',
                 ],
             ],
             [
-                'id' => 201,
-                'game_name' => 'Fortune Tiger',
-                'slug' => 'fortune-tiger',
-                'game_code' => 'fortune-tiger',
-                'cover' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
+                ...$games[1],
+                'cover' => $this->fallbackCover(),
+                'provider' => [
+                    'id' => 1,
+                    'name' => 'Original Slots A',
+                    'slug' => 'original-slots-a',
+                ],
+            ],
+            [
+                ...$games[6],
+                'cover' => $this->fallbackCover(),
                 'provider' => [
                     'id' => 2,
-                    'name' => 'PG Soft',
-                    'slug' => 'pg-soft',
+                    'name' => 'Original Slots B',
+                    'slug' => 'original-slots-b',
                 ],
             ],
         ];
@@ -121,115 +182,49 @@ class GameController extends Controller
 
     protected function fallbackSingleGame(string $id): array
     {
-        $games = [
-            '101' => [
-                'id' => 101,
-                'game_name' => 'Sweet Bonanza',
-                'slug' => 'sweet-bonanza',
-                'game_code' => 'sweet-bonanza',
-                'cover' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
-                'distribution' => 'source',
-                'provider' => [
-                    'id' => 1,
-                    'name' => 'Pragmatic Play',
-                    'slug' => 'pragmatic-play',
-                ],
-                'categories' => [
-                    ['id' => 1, 'name' => 'Slots', 'slug' => 'slots'],
-                ],
+        $games = collect($this->originalGameMap())->keyBy(fn ($item) => (string) $item['id'])->toArray();
+
+        $base = $games[$id] ?? $games['101'];
+
+        return [
+            ...$base,
+            'cover' => $this->fallbackCover(),
+            'distribution' => 'source',
+            'provider' => [
+                'id' => ((int) $base['id'] < 200) ? 1 : 2,
+                'name' => ((int) $base['id'] < 200) ? 'Original Slots A' : 'Original Slots B',
+                'slug' => ((int) $base['id'] < 200) ? 'original-slots-a' : 'original-slots-b',
             ],
-            '102' => [
-                'id' => 102,
-                'game_name' => 'Gates of Olympus',
-                'slug' => 'gates-of-olympus',
-                'game_code' => 'gates-of-olympus',
-                'cover' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
-                'distribution' => 'source',
-                'provider' => [
-                    'id' => 1,
-                    'name' => 'Pragmatic Play',
-                    'slug' => 'pragmatic-play',
-                ],
-                'categories' => [
-                    ['id' => 1, 'name' => 'Slots', 'slug' => 'slots'],
-                ],
-            ],
-            '201' => [
-                'id' => 201,
-                'game_name' => 'Fortune Tiger',
-                'slug' => 'fortune-tiger',
-                'game_code' => 'fortune-tiger',
-                'cover' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
-                'distribution' => 'source',
-                'provider' => [
-                    'id' => 2,
-                    'name' => 'PG Soft',
-                    'slug' => 'pg-soft',
-                ],
-                'categories' => [
-                    ['id' => 1, 'name' => 'Slots', 'slug' => 'slots'],
-                ],
+            'categories' => [
+                ['id' => 1, 'name' => 'Slots', 'slug' => 'slots'],
             ],
         ];
-
-        return $games[$id] ?? $games['101'];
     }
 
     protected function fallbackGamesPaginated(Request $request): array
     {
-        $games = [
-            [
-                'id' => 101,
-                'game_name' => 'Sweet Bonanza',
-                'slug' => 'sweet-bonanza',
-                'game_code' => 'sweet-bonanza',
-                'cover' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
+        $games = array_map(function ($game) {
+            return [
+                ...$game,
+                'cover' => $this->fallbackCover(),
                 'provider' => [
-                    'id' => 1,
-                    'name' => 'Pragmatic Play',
-                    'slug' => 'pragmatic-play',
+                    'id' => ((int) $game['id'] < 200) ? 1 : 2,
+                    'name' => ((int) $game['id'] < 200) ? 'Original Slots A' : 'Original Slots B',
+                    'slug' => ((int) $game['id'] < 200) ? 'original-slots-a' : 'original-slots-b',
                 ],
                 'categories' => [
                     ['id' => 1, 'name' => 'Slots', 'slug' => 'slots'],
                 ],
-            ],
-            [
-                'id' => 102,
-                'game_name' => 'Gates of Olympus',
-                'slug' => 'gates-of-olympus',
-                'game_code' => 'gates-of-olympus',
-                'cover' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
-                'provider' => [
-                    'id' => 1,
-                    'name' => 'Pragmatic Play',
-                    'slug' => 'pragmatic-play',
-                ],
-                'categories' => [
-                    ['id' => 1, 'name' => 'Slots', 'slug' => 'slots'],
-                ],
-            ],
-            [
-                'id' => 201,
-                'game_name' => 'Fortune Tiger',
-                'slug' => 'fortune-tiger',
-                'game_code' => 'fortune-tiger',
-                'cover' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
-                'provider' => [
-                    'id' => 2,
-                    'name' => 'PG Soft',
-                    'slug' => 'pg-soft',
-                ],
-                'categories' => [
-                    ['id' => 1, 'name' => 'Slots', 'slug' => 'slots'],
-                ],
-            ],
-        ];
+            ];
+        }, $this->originalGameMap());
 
         $searchTerm = trim((string) $request->get('searchTerm', ''));
+
         if ($searchTerm !== '') {
             $games = array_values(array_filter($games, function ($game) use ($searchTerm) {
                 return str_contains(strtolower($game['game_name']), strtolower($searchTerm))
-                    || str_contains(strtolower($game['game_code']), strtolower($searchTerm));
+                    || str_contains(strtolower($game['game_code']), strtolower($searchTerm))
+                    || str_contains(strtolower($game['slug']), strtolower($searchTerm));
             }));
         }
 
@@ -313,10 +308,7 @@ class GameController extends Controller
 
             return response()->json([], 500);
         } catch (Throwable $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Source provider fallback unavailable',
-            ], 500);
+            return response()->json([], 500);
         }
     }
 
@@ -330,10 +322,7 @@ class GameController extends Controller
 
                 if (!empty($checkExist)) {
                     if ($checkExist->delete()) {
-                        return response()->json([
-                            'status' => true,
-                            'message' => 'Removed successfully',
-                        ], 200);
+                        return response()->json(['status' => true, 'message' => 'Removed successfully'], 200);
                     }
                 } else {
                     $gameFavoriteCreate = GameFavorite::create([
@@ -342,18 +331,12 @@ class GameController extends Controller
                     ]);
 
                     if ($gameFavoriteCreate) {
-                        return response()->json([
-                            'status' => true,
-                            'message' => 'Created successfully',
-                        ], 200);
+                        return response()->json(['status' => true, 'message' => 'Created successfully'], 200);
                     }
                 }
             }
 
-            return response()->json([
-                'status' => false,
-                'message' => 'Unauthorized',
-            ], 401);
+            return response()->json(['status' => false, 'message' => 'Unauthorized'], 401);
         } catch (Throwable $e) {
             return response()->json([
                 'status' => true,
@@ -373,10 +356,7 @@ class GameController extends Controller
 
                 if (!empty($checkExist)) {
                     if ($checkExist->delete()) {
-                        return response()->json([
-                            'status' => true,
-                            'message' => 'Removed successfully',
-                        ], 200);
+                        return response()->json(['status' => true, 'message' => 'Removed successfully'], 200);
                     }
                 } else {
                     $gameLikeCreate = GameLike::create([
@@ -385,18 +365,12 @@ class GameController extends Controller
                     ]);
 
                     if ($gameLikeCreate) {
-                        return response()->json([
-                            'status' => true,
-                            'message' => 'Created successfully',
-                        ], 200);
+                        return response()->json(['status' => true, 'message' => 'Created successfully'], 200);
                     }
                 }
             }
 
-            return response()->json([
-                'status' => false,
-                'message' => 'Unauthorized',
-            ], 401);
+            return response()->json(['status' => false, 'message' => 'Unauthorized'], 401);
         } catch (Throwable $e) {
             return response()->json([
                 'status' => true,
@@ -411,124 +385,39 @@ class GameController extends Controller
         try {
             $game = Game::with(['categories', 'provider'])->whereStatus(1)->find($id);
 
-            if (!empty($game)) {
-                if (auth('api')->check()) {
-                    $wallet = Wallet::where('user_id', auth('api')->id())->first();
+            if (!empty($game) && auth('api')->check()) {
+                $wallet = Wallet::where('user_id', auth('api')->id())->first();
 
-                    if ($wallet && $wallet->total_balance > 0) {
-                        $game->increment('views');
+                if ($wallet && $wallet->total_balance > 0) {
+                    $game->increment('views');
 
-                        $token = \Helper::MakeToken([
-                            'id' => auth('api')->id(),
-                            'game' => $game->game_code,
-                        ]);
+                    $token = \Helper::MakeToken([
+                        'id' => auth('api')->id(),
+                        'game' => $game->game_code,
+                    ]);
 
-                        switch ($game->distribution) {
-                            case 'source':
-                                return response()->json([
-                                    'game' => $game,
-                                    'gameUrl' => url('/originals/' . $game->game_code . '/index.html?token=' . $token),
-                                    'token' => $token,
-                                ], 200);
-
-                            case 'salsa':
-                                return response()->json([
-                                    'game' => $game,
-                                    'gameUrl' => self::playGameSalsa('CHARGED', 'BRL', 'BR', $game->game_id),
-                                    'token' => $token,
-                                ], 200);
-
-                            case 'kagaming':
-                                return response()->json([
-                                    'game' => $game,
-                                    'gameUrl' => self::GameLaunchKaGaming($game->game_server_url, $game->game_code),
-                                    'token' => $token,
-                                ], 200);
-
-                            case 'vibra_gaming':
-                                return response()->json([
-                                    'game' => $game,
-                                    'gameUrl' => self::GenerateGameLaunch($game),
-                                    'token' => $token,
-                                ], 200);
-
-                            case 'fivers':
-                                $fiversLaunch = self::GameLaunchFivers($game->provider->code, $game->game_id, 'pt', auth('api')->id());
-
-                                if (isset($fiversLaunch['launch_url'])) {
-                                    return response()->json([
-                                        'game' => $game,
-                                        'gameUrl' => $fiversLaunch['launch_url'],
-                                        'token' => $token,
-                                    ], 200);
-                                }
-
-                                return response()->json([
-                                    'error' => $fiversLaunch,
-                                    'status' => false,
-                                ], 400);
-
-                            case 'games2_api':
-                                $games2ApiLaunch = self::GameLaunchGames2($game->provider->code, $game->game_id, 'pt', auth('api')->id());
-
-                                if (isset($games2ApiLaunch['launch_url'])) {
-                                    return response()->json([
-                                        'game' => $game,
-                                        'gameUrl' => $games2ApiLaunch['launch_url'],
-                                        'token' => $token,
-                                    ], 200);
-                                }
-
-                                return response()->json([
-                                    'error' => $games2ApiLaunch,
-                                    'status' => false,
-                                ], 400);
-
-                            case 'worldslot':
-                                $worldslotLaunch = self::GameLaunchWorldSlot($game->provider->code, $game->game_id, 'pt', auth('api')->id());
-
-                                if (isset($worldslotLaunch['launch_url'])) {
-                                    return response()->json([
-                                        'game' => $game,
-                                        'gameUrl' => $worldslotLaunch['launch_url'],
-                                        'token' => $token,
-                                    ], 200);
-                                }
-
-                                return response()->json([
-                                    'error' => $worldslotLaunch,
-                                    'status' => false,
-                                ], 400);
-                        }
+                    switch ($game->distribution) {
+                        case 'source':
+                            return response()->json([
+                                'game' => $game,
+                                'gameUrl' => url('/originals/' . $game->game_code . '/index.html?token=' . $token),
+                                'token' => $token,
+                            ], 200);
                     }
-
-                    return response()->json([
-                        'error' => 'Você precisa ter saldo para jogar',
-                        'status' => false,
-                        'action' => 'deposit',
-                    ], 200);
                 }
-
-                return response()->json([
-                    'error' => 'Você precisa tá autenticado para jogar',
-                    'status' => false,
-                ], 400);
             }
-
-            return response()->json([
-                'error' => '',
-                'status' => false,
-            ], 400);
         } catch (Throwable $e) {
-            $game = $this->fallbackSingleGame($id);
-
-            return response()->json([
-                'game' => $game,
-                'gameUrl' => url('/'),
-                'token' => 'demo-token',
-                'fallback' => true,
-            ], 200);
+            // fallback below
         }
+
+        $game = $this->fallbackSingleGame($id);
+
+        return response()->json([
+            'game' => $game,
+            'gameUrl' => url('/originals/' . $game['game_code'] . '/index.html?token=demo-token'),
+            'token' => 'demo-token',
+            'fallback' => true,
+        ], 200);
     }
 
     public function allGames(Request $request)
