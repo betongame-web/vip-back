@@ -34,7 +34,7 @@ class GameController extends Controller
                         'game_name' => 'Sweet Bonanza',
                         'slug' => 'sweet-bonanza',
                         'game_code' => 'sweet-bonanza',
-                        'cover' => '/assets/images/invite_bg_m_bafe1d0e.png',
+                        'cover' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
                         'provider' => [
                             'id' => 1,
                             'name' => 'Pragmatic Play',
@@ -46,7 +46,7 @@ class GameController extends Controller
                         'game_name' => 'Gates of Olympus',
                         'slug' => 'gates-of-olympus',
                         'game_code' => 'gates-of-olympus',
-                        'cover' => '/assets/images/invite_bg_m_bafe1d0e.png',
+                        'cover' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
                         'provider' => [
                             'id' => 1,
                             'name' => 'Pragmatic Play',
@@ -65,7 +65,7 @@ class GameController extends Controller
                         'game_name' => 'Fortune Tiger',
                         'slug' => 'fortune-tiger',
                         'game_code' => 'fortune-tiger',
-                        'cover' => '/assets/images/invite_bg_m_bafe1d0e.png',
+                        'cover' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
                         'provider' => [
                             'id' => 2,
                             'name' => 'PG Soft',
@@ -77,7 +77,7 @@ class GameController extends Controller
                         'game_name' => 'Fortune Rabbit',
                         'slug' => 'fortune-rabbit',
                         'game_code' => 'fortune-rabbit',
-                        'cover' => '/assets/images/invite_bg_m_bafe1d0e.png',
+                        'cover' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
                         'provider' => [
                             'id' => 2,
                             'name' => 'PG Soft',
@@ -109,7 +109,7 @@ class GameController extends Controller
                 'game_name' => 'Fortune Tiger',
                 'slug' => 'fortune-tiger',
                 'game_code' => 'fortune-tiger',
-                'cover' => '/assets/images/invite_bg_m_bafe1d0e.png',
+                'cover' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
                 'provider' => [
                     'id' => 2,
                     'name' => 'PG Soft',
@@ -127,7 +127,7 @@ class GameController extends Controller
                 'game_name' => 'Sweet Bonanza',
                 'slug' => 'sweet-bonanza',
                 'game_code' => 'sweet-bonanza',
-                'cover' => '/assets/images/invite_bg_m_bafe1d0e.png',
+                'cover' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
                 'distribution' => 'source',
                 'provider' => [
                     'id' => 1,
@@ -143,7 +143,7 @@ class GameController extends Controller
                 'game_name' => 'Gates of Olympus',
                 'slug' => 'gates-of-olympus',
                 'game_code' => 'gates-of-olympus',
-                'cover' => '/assets/images/invite_bg_m_bafe1d0e.png',
+                'cover' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
                 'distribution' => 'source',
                 'provider' => [
                     'id' => 1,
@@ -159,7 +159,7 @@ class GameController extends Controller
                 'game_name' => 'Fortune Tiger',
                 'slug' => 'fortune-tiger',
                 'game_code' => 'fortune-tiger',
-                'cover' => '/assets/images/invite_bg_m_bafe1d0e.png',
+                'cover' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
                 'distribution' => 'source',
                 'provider' => [
                     'id' => 2,
@@ -183,7 +183,7 @@ class GameController extends Controller
                 'game_name' => 'Sweet Bonanza',
                 'slug' => 'sweet-bonanza',
                 'game_code' => 'sweet-bonanza',
-                'cover' => '/assets/images/invite_bg_m_bafe1d0e.png',
+                'cover' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
                 'provider' => [
                     'id' => 1,
                     'name' => 'Pragmatic Play',
@@ -198,7 +198,7 @@ class GameController extends Controller
                 'game_name' => 'Gates of Olympus',
                 'slug' => 'gates-of-olympus',
                 'game_code' => 'gates-of-olympus',
-                'cover' => '/assets/images/invite_bg_m_bafe1d0e.png',
+                'cover' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
                 'provider' => [
                     'id' => 1,
                     'name' => 'Pragmatic Play',
@@ -213,7 +213,7 @@ class GameController extends Controller
                 'game_name' => 'Fortune Tiger',
                 'slug' => 'fortune-tiger',
                 'game_code' => 'fortune-tiger',
-                'cover' => '/assets/images/invite_bg_m_bafe1d0e.png',
+                'cover' => url('/assets/images/invite_bg_m_bafe1d0e.png'),
                 'provider' => [
                     'id' => 2,
                     'name' => 'PG Soft',
