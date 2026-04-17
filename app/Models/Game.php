@@ -12,18 +12,8 @@ class Game extends Model
 {
     use HasFactory;
 
-    /**
-     * The database table used by the model.
-     *
-     * @var string
-     */
     protected $table = 'games';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'provider_id',
         'game_server_url',
@@ -44,115 +34,106 @@ class Game extends Model
         'distribution',
         'views',
         'is_featured',
-        'show_home'
+        'show_home',
     ];
 
-    protected $appends = ['hasFavorite', 'totalFavorites', 'hasLike', 'totalLikes', 'dateHumanReadable', 'createdAt' ];
+    protected $appends = [
+        'hasFavorite',
+        'totalFavorites',
+        'hasLike',
+        'totalLikes',
+        'dateHumanReadable',
+        'createdAt',
+    ];
 
-    /**
-     * Total Favorites
-     * @return int
-     */
-    public function getTotalFavoritesAttribute()
+    public function getTotalFavoritesAttribute(): int
     {
-        return $this->favorites()->count();
+        try {
+            return (int) $this->favorites()->count();
+        } catch (\Throwable $e) {
+            return 0;
+        }
     }
 
-    /**
-     * Total Favorites
-     * @return int
-     */
-    public function getTotalLikesAttribute()
+    public function getTotalLikesAttribute(): int
     {
-        return $this->likes()->count();
+        try {
+            return (int) $this->likes()->count();
+        } catch (\Throwable $e) {
+            return 0;
+        }
     }
 
-    /**
-     * Has Favorite
-     * @return int
-     */
-    public function getHasLikeAttribute()
+    public function getHasLikeAttribute(): bool
     {
-        if(auth('api')->check() && !empty($this->attributes['id'])) {
-            $like = GameLike::whereUserId(auth('api')->id())->where('game_id', $this->attributes['id'])->first();
-            if(!empty($like)) {
-                return true;
+        try {
+            if (auth('api')->check() && !empty($this->attributes['id'])) {
+                $like = GameLike::where('user_id', auth('api')->id())
+                    ->where('game_id', $this->attributes['id'])
+                    ->first();
+
+                return !empty($like);
             }
+
+            return false;
+        } catch (\Throwable $e) {
             return false;
         }
-        return false;
     }
 
-    /**
-     * Has Favorite
-     * @return int
-     */
-    public function getHasFavoriteAttribute()
+    public function getHasFavoriteAttribute(): bool
     {
-       if(auth('api')->check() && !empty($this->attributes['id'])) {
-           $favorite = GameFavorite::whereUserId(auth('api')->id())->where('game_id', $this->attributes['id'])->first();
-           if(!empty($favorite)) {
-               return true;
-           }
-           return false;
-       }
-       return false;
+        try {
+            if (auth('api')->check() && !empty($this->attributes['id'])) {
+                $favorite = GameFavorite::where('user_id', auth('api')->id())
+                    ->where('game_id', $this->attributes['id'])
+                    ->first();
+
+                return !empty($favorite);
+            }
+
+            return false;
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
 
-    /**
-     * @return BelongsTo
-     */
     public function provider(): BelongsTo
     {
         return $this->belongsTo(Provider::class, 'provider_id', 'id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
     public function categories(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Category::class);
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
     public function favorites(): HasMany
     {
         return $this->hasMany(GameFavorite::class);
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
     public function likes(): HasMany
     {
         return $this->hasMany(GameLike::class);
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
     public function reviews(): HasMany
     {
         return $this->hasMany(GameReview::class);
     }
 
-
-    /**
-     * @return mixed
-     */
     public function getCreatedAtAttribute()
     {
-        return Carbon::parse($this->attributes['created_at'])->format('Y-m-d');
+        return !empty($this->attributes['created_at'])
+            ? Carbon::parse($this->attributes['created_at'])->format('Y-m-d')
+            : null;
     }
 
-    /**
-     * @return mixed
-     */
     public function getDateHumanReadableAttribute()
     {
-        return Carbon::parse($this->created_at)->diffForHumans();
+        return !empty($this->attributes['created_at'])
+            ? Carbon::parse($this->attributes['created_at'])->diffForHumans()
+            : null;
     }
 }
