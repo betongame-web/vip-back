@@ -15,5 +15,6 @@ php artisan cache:clear || true
 php artisan optimize:clear || true
 
 php artisan migrate --force || true
+php artisan db:seed --force || true
 
 exec php -S 0.0.0.0:${PORT:-10000} -t public server.php
