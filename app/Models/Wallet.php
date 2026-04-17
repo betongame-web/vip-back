@@ -10,58 +10,50 @@ class Wallet extends Model
 {
     use HasFactory;
 
-    /**
-     * The database table used by the model.
-     *
-     * @var string
-     */
     protected $table = 'wallets';
-    protected $appends = ['total_balance'];
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'user_id',
         'currency',
         'symbol',
         'balance',
-        'balance_withdrawal',
-        'balance_deposit_rollover',
-        'balance_bonus',
-        'balance_bonus_rollover',
-        'balance_cryptocurrency',
-        'balance_demo',
-        'refer_rewards',
-        'total_bet',
-        'total_won',
-        'total_lose',
-        'last_won',
-        'last_lose',
-        'hide_balance',
+        'bonus_balance',
+        'withdrawable_balance',
+        'total_balance',
+        'total_deposited',
+        'total_withdrawn',
+        'total_wagered',
+        'rollover_remaining',
         'active',
-        'vip_level',
-        'vip_points',
     ];
 
-    /**
-     * Cover
-     * @return int
-     */
-    public function getTotalBalanceAttribute()
+    protected $casts = [
+        'balance' => 'float',
+        'bonus_balance' => 'float',
+        'withdrawable_balance' => 'float',
+        'total_balance' => 'float',
+        'total_deposited' => 'float',
+        'total_withdrawn' => 'float',
+        'total_wagered' => 'float',
+        'rollover_remaining' => 'float',
+        'active' => 'boolean',
+    ];
+
+    public function getTotalBalanceAttribute($value): float
     {
-        return ($this->attributes['balance'] + $this->attributes['balance_bonus'] + $this->attributes['balance_withdrawal']);
+        if ($value !== null) {
+            return (float) $value;
+        }
+
+        $balance = (float) ($this->attributes['balance'] ?? 0);
+        $bonus = (float) ($this->attributes['bonus_balance'] ?? 0);
+        $withdrawable = (float) ($this->attributes['withdrawable_balance'] ?? 0);
+
+        return $balance + $bonus + $withdrawable;
     }
 
-    /**
-     * @return BelongsTo
-     */
-    public function user() : BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
-
-
 }
