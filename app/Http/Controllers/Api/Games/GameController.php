@@ -253,12 +253,18 @@ class GameController extends Controller
         try {
             $providers = Provider::with(['games', 'games.provider'])
                 ->whereHas('games')
-                ->orderBy('name', 'desc')
                 ->where('status', 1)
+                ->orderBy('name', 'desc')
                 ->get();
 
             return response()->json(['providers' => $providers], 200);
         } catch (Throwable $e) {
+            Log::error('GameController@index failed', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
             return response()->json([
                 'providers' => $this->fallbackProviders(),
                 'fallback' => true,
@@ -275,6 +281,12 @@ class GameController extends Controller
 
             return response()->json(['featured_games' => $featuredGames], 200);
         } catch (Throwable $e) {
+            Log::error('GameController@featured failed', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
             return response()->json([
                 'featured_games' => $this->fallbackFeaturedGames(),
                 'fallback' => true,
@@ -313,6 +325,13 @@ class GameController extends Controller
 
             return response()->json([], 500);
         } catch (Throwable $e) {
+            Log::error('GameController@sourceProvider failed', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'action' => $action,
+            ]);
+
             return response()->json([], 500);
         }
     }
@@ -352,6 +371,13 @@ class GameController extends Controller
                 'message' => 'Unauthorized',
             ], 401);
         } catch (Throwable $e) {
+            Log::error('GameController@toggleFavorite failed', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'game_id' => $id,
+            ]);
+
             return response()->json([
                 'status' => true,
                 'message' => 'Fallback favorite toggle success',
@@ -395,6 +421,13 @@ class GameController extends Controller
                 'message' => 'Unauthorized',
             ], 401);
         } catch (Throwable $e) {
+            Log::error('GameController@toggleLike failed', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'game_id' => $id,
+            ]);
+
             return response()->json([
                 'status' => true,
                 'message' => 'Fallback like toggle success',
@@ -421,18 +454,22 @@ class GameController extends Controller
                         'game' => $game->game_code,
                     ]);
 
-                    switch ($game->distribution) {
-                        case 'source':
-                            return response()->json([
-                                'game' => $game,
-                                'gameUrl' => url('/originals/' . $game->game_code . '/index.html?token=' . $token),
-                                'token' => $token,
-                            ], 200);
+                    if ($game->distribution === 'source') {
+                        return response()->json([
+                            'game' => $game,
+                            'gameUrl' => url('/originals/' . $game->game_code . '/index.html?token=' . $token),
+                            'token' => $token,
+                        ], 200);
                     }
                 }
             }
         } catch (Throwable $e) {
-            // fallback below
+            Log::error('GameController@show failed', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'game_id' => $id,
+            ]);
         }
 
         $game = $this->fallbackSingleGame($id);
@@ -477,6 +514,15 @@ class GameController extends Controller
 
             return response()->json(['games' => $games], 200);
         } catch (Throwable $e) {
+            Log::error('GameController@allGames failed', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'provider' => $request->provider ?? null,
+                'category' => $request->category ?? null,
+                'searchTerm' => $request->searchTerm ?? null,
+            ]);
+
             return response()->json([
                 'games' => $this->fallbackGamesPaginated($request),
                 'fallback' => true,
