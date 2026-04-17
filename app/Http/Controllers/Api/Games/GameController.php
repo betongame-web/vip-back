@@ -466,30 +466,59 @@ class GameController extends Controller
     }
 
     public function show(string $id)
-    {
-        try {
-            $game = Game::with(['categories', 'provider'])
-                ->whereStatus(1)
-                ->find($id);
+{
+    try {
+        $game = Game::with(['categories', 'provider'])
+            ->whereStatus(1)
+            ->find($id);
 
-            if (!empty($game) && auth('api')->check()) {
-                $wallet = Wallet::where('user_id', auth('api')->id())->first();
+        if (!empty($game) && auth('api')->check()) {
+            $wallet = Wallet::where('user_id', auth('api')->id())->first();
 
-                if ($wallet && $wallet->total_balance > 0) {
-                    $game->increment('views');
+            $walletTotal = 0;
 
-                    $token = \Helper::MakeToken([
-                        'id' => auth('api')->id(),
-                        'game' => $game->game_code,
-                    ]);
+            if ($wallet) {
+                $walletTotal = (float) (
+                    $wallet->total_balance
+                    ?? (($wallet->balance ?? 0) + ($wallet->bonus_balance ?? 0) + ($wallet->withdrawable_balance ?? 0))
+                );
+            }
 
-                    if ($game->distribution === 'source') {
-                        return response()->json([
-                            'game' => $game,
-                            'gameUrl' => url('/originals/' . $game->game_code . '/index.html?token=' . $token),
-                            'token' => $token,
-                        ], 200);
-                    }
+            if ($wallet && $walletTotal > 0) {
+                $game->increment('views');
+
+                $token = \Helper::MakeToken([
+                    'id' => auth('api')->id(),
+                    'game' => $game->game_code,
+                ]);
+
+                if ($game->distribution === 'source') {
+                    return response()->json([
+                        'game' => $game,
+                        'gameUrl' => secure_url('/originals/' . $game->game_code . '/index.html?token=' . $token),
+                        'token' => $token,
+                    ], 200);
+                }
+            }
+        }
+    } catch (Throwable $e) {
+        Log::error('GameController@show failed', [
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'game_id' => $id,
+        ]);
+    }
+
+    $game = $this->fallbackSingleGame($id);
+
+    return response()->json([
+        'game' => $game,
+        'gameUrl' => secure_url('/originals/' . $game['game_code'] . '/index.html?token=demo-token'),
+        'token' => 'demo-token',
+        'fallback' => true,
+    ], 200);
+}
                 }
             }
         } catch (Throwable $e) {
