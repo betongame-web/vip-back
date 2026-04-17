@@ -23,9 +23,9 @@ class GameController extends Controller
     use KaGamingTrait, FiversTrait, VibraTrait, SalsaGamesTrait, WorldSlotTrait, Games2ApiTrait;
 
     protected function fallbackCover(): string
-    {
-        return url('/assets/images/FortuneTiger.webp');
-    }
+{
+    return secure_url('/assets/images/FortuneTiger.webp');
+}
 
     protected function originalGameMap(): array
     {
