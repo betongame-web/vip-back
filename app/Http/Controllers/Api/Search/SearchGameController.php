@@ -3,191 +3,84 @@
 namespace App\Http\Controllers\Api\Search;
 
 use App\Http\Controllers\Controller;
+use App\Models\Game;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class SearchGameController extends Controller
 {
-    protected function fallbackGames(): array
+    protected function fallbackCover(): string
     {
-        return [
-            [
-                'id' => 101,
-                'game_name' => 'Fortune Tiger',
-                'slug' => 'fortune-tiger',
-                'game_code' => 'fortunetiger',
-                'cover' => url('/favicon.ico'),
-                'provider' => [
-                    'id' => 1,
-                    'name' => 'Original Games',
-                    'slug' => 'original-games',
-                ],
-            ],
-            [
-                'id' => 102,
-                'game_name' => 'Fortune Rabbit',
-                'slug' => 'fortune-rabbit',
-                'game_code' => 'fortunerabbit',
-                'cover' => url('/favicon.ico'),
-                'provider' => [
-                    'id' => 1,
-                    'name' => 'Original Games',
-                    'slug' => 'original-games',
-                ],
-            ],
-            [
-                'id' => 103,
-                'game_name' => 'Fortune Ox',
-                'slug' => 'fortune-ox',
-                'game_code' => 'fortuneox',
-                'cover' => url('/favicon.ico'),
-                'provider' => [
-                    'id' => 1,
-                    'name' => 'Original Games',
-                    'slug' => 'original-games',
-                ],
-            ],
-            [
-                'id' => 104,
-                'game_name' => 'Fortune Panda',
-                'slug' => 'fortune-panda',
-                'game_code' => 'fortunepanda',
-                'cover' => url('/favicon.ico'),
-                'provider' => [
-                    'id' => 1,
-                    'name' => 'Original Games',
-                    'slug' => 'original-games',
-                ],
-            ],
-            [
-                'id' => 105,
-                'game_name' => 'Fortune Mouse',
-                'slug' => 'fortune-mouse',
-                'game_code' => 'fortunemouse',
-                'cover' => url('/favicon.ico'),
-                'provider' => [
-                    'id' => 1,
-                    'name' => 'Original Games',
-                    'slug' => 'original-games',
-                ],
-            ],
-            [
-                'id' => 106,
-                'game_name' => 'Treasures of Aztec',
-                'slug' => 'treasures-of-aztec',
-                'game_code' => 'treasuresofaztec',
-                'cover' => url('/favicon.ico'),
-                'provider' => [
-                    'id' => 1,
-                    'name' => 'Original Games',
-                    'slug' => 'original-games',
-                ],
-            ],
-            [
-                'id' => 201,
-                'game_name' => 'Phoenix Rises',
-                'slug' => 'phoenix-rises',
-                'game_code' => 'phoenixrises',
-                'cover' => url('/favicon.ico'),
-                'provider' => [
-                    'id' => 2,
-                    'name' => 'Special Originals',
-                    'slug' => 'special-originals',
-                ],
-            ],
-            [
-                'id' => 202,
-                'game_name' => 'Queen of Bounty',
-                'slug' => 'queen-of-bounty',
-                'game_code' => 'queenofbounty',
-                'cover' => url('/favicon.ico'),
-                'provider' => [
-                    'id' => 2,
-                    'name' => 'Special Originals',
-                    'slug' => 'special-originals',
-                ],
-            ],
-            [
-                'id' => 203,
-                'game_name' => 'Jack Frost',
-                'slug' => 'jack-frost',
-                'game_code' => 'jackfrost',
-                'cover' => url('/favicon.ico'),
-                'provider' => [
-                    'id' => 2,
-                    'name' => 'Special Originals',
-                    'slug' => 'special-originals',
-                ],
-            ],
-            [
-                'id' => 204,
-                'game_name' => 'Songkran Party',
-                'slug' => 'songkran-party',
-                'game_code' => 'songkranparty',
-                'cover' => url('/favicon.ico'),
-                'provider' => [
-                    'id' => 2,
-                    'name' => 'Special Originals',
-                    'slug' => 'special-originals',
-                ],
-            ],
-            [
-                'id' => 205,
-                'game_name' => 'Bikini Paradise',
-                'slug' => 'bikini-paradise',
-                'game_code' => 'bikiniparadise',
-                'cover' => url('/favicon.ico'),
-                'provider' => [
-                    'id' => 2,
-                    'name' => 'Special Originals',
-                    'slug' => 'special-originals',
-                ],
-            ],
-            [
-                'id' => 206,
-                'game_name' => 'Hood vs Woolf',
-                'slug' => 'hood-vs-woolf',
-                'game_code' => 'hoodvswoolf',
-                'cover' => url('/favicon.ico'),
-                'provider' => [
-                    'id' => 2,
-                    'name' => 'Special Originals',
-                    'slug' => 'special-originals',
-                ],
-            ],
-        ];
+        return url('/assets/images/FortuneTiger.webp');
     }
 
     public function index(Request $request)
     {
-        $games = $this->fallbackGames();
+        try {
+            $searchTerm = trim((string) $request->get('searchTerm', ''));
 
-        $searchTerm = trim((string) $request->get('searchTerm', ''));
+            $query = Game::query()
+                ->leftJoin('providers', 'providers.id', '=', 'games.provider_id')
+                ->where('games.status', 1)
+                ->select([
+                    'games.id',
+                    'games.game_name',
+                    'games.slug',
+                    'games.game_code',
+                    'games.cover',
+                    'providers.id as provider_id',
+                    'providers.name as provider_name',
+                    'providers.code as provider_slug',
+                ]);
 
-        if ($searchTerm !== '') {
-            $games = array_values(array_filter($games, function ($game) use ($searchTerm) {
-                return str_contains(strtolower($game['game_name']), strtolower($searchTerm))
-                    || str_contains(strtolower($game['game_code']), strtolower($searchTerm))
-                    || str_contains(strtolower($game['slug']), strtolower($searchTerm));
-            }));
+            if ($searchTerm !== '') {
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('games.game_name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('games.game_code', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('games.slug', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('providers.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('providers.code', 'like', '%' . $searchTerm . '%');
+                });
+            }
+
+            $games = $query
+                ->orderBy('games.views', 'desc')
+                ->paginate(12)
+                ->appends($request->query());
+
+            $games->getCollection()->transform(function ($game) {
+                return [
+                    'id' => $game->id,
+                    'game_name' => $game->game_name,
+                    'slug' => $game->slug,
+                    'game_code' => $game->game_code,
+                    'cover' => $game->cover ? url($game->cover) : $this->fallbackCover(),
+                    'provider' => [
+                        'id' => $game->provider_id,
+                        'name' => $game->provider_name,
+                        'slug' => $game->provider_slug,
+                    ],
+                ];
+            });
+
+            return response()->json([
+                'games' => $games,
+            ], 200);
+        } catch (Throwable $e) {
+            Log::error('SearchGameController@index failed', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'searchTerm' => $request->get('searchTerm'),
+            ]);
+
+            return response()->json([
+                'debug' => true,
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ], 500);
         }
-
-        return response()->json([
-            'games' => [
-                'current_page' => 1,
-                'data' => $games,
-                'first_page_url' => url('/api/search/games?page=1'),
-                'from' => count($games) ? 1 : null,
-                'last_page' => 1,
-                'last_page_url' => url('/api/search/games?page=1'),
-                'links' => [],
-                'next_page_url' => null,
-                'path' => url('/api/search/games'),
-                'per_page' => 12,
-                'prev_page_url' => null,
-                'to' => count($games),
-                'total' => count($games),
-            ],
-            'fallback' => true,
-        ], 200);
     }
 }
