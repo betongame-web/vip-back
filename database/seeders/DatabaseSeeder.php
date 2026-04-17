@@ -10,6 +10,10 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             SettingsSeeder::class,
+            ProvidersSeeder::class,
+            CategoriesSeeder::class,
+            GamesSeeder::class,
+            CategoryGameSeeder::class,
         ]);
     }
 }
