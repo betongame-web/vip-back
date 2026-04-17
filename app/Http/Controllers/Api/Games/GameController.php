@@ -234,13 +234,13 @@ class GameController extends Controller
         return [
             'current_page' => 1,
             'data' => $games,
-            'first_page_url' => url('/api/casinos/games?page=1'),
+            'first_page_url' => url('/api/games/all?page=1'),
             'from' => count($games) ? 1 : null,
             'last_page' => 1,
-            'last_page_url' => url('/api/casinos/games?page=1'),
+            'last_page_url' => url('/api/games/all?page=1'),
             'links' => [],
             'next_page_url' => null,
-            'path' => url('/api/casinos/games'),
+            'path' => url('/api/games/all'),
             'per_page' => 12,
             'prev_page_url' => null,
             'to' => count($games),
@@ -275,11 +275,40 @@ class GameController extends Controller
     public function featured()
     {
         try {
-            $featuredGames = Game::with(['provider'])
-                ->where('is_featured', 1)
-                ->get();
+            $featuredGames = Game::query()
+                ->leftJoin('providers', 'providers.id', '=', 'games.provider_id')
+                ->where('games.is_featured', 1)
+                ->where('games.status', 1)
+                ->select([
+                    'games.id',
+                    'games.game_name',
+                    'games.slug',
+                    'games.game_code',
+                    'games.cover',
+                    'providers.id as provider_id',
+                    'providers.name as provider_name',
+                    'providers.code as provider_slug',
+                ])
+                ->get()
+                ->map(function ($game) {
+                    return [
+                        'id' => $game->id,
+                        'game_name' => $game->game_name,
+                        'slug' => $game->slug,
+                        'game_code' => $game->game_code,
+                        'cover' => $game->cover ? url($game->cover) : $this->fallbackCover(),
+                        'provider' => [
+                            'id' => $game->provider_id,
+                            'name' => $game->provider_name,
+                            'slug' => $game->provider_slug,
+                        ],
+                    ];
+                })
+                ->values();
 
-            return response()->json(['featured_games' => $featuredGames], 200);
+            return response()->json([
+                'featured_games' => $featuredGames,
+            ], 200);
         } catch (Throwable $e) {
             Log::error('GameController@featured failed', [
                 'message' => $e->getMessage(),
@@ -485,8 +514,7 @@ class GameController extends Controller
     public function allGames(Request $request)
     {
         try {
-            $query = Game::query();
-            $query->with(['provider', 'categories']);
+            $query = Game::query()->with(['provider', 'categories']);
 
             if (!empty($request->provider) && $request->provider !== 'all') {
                 $query->where('provider_id', $request->provider);
@@ -498,11 +526,19 @@ class GameController extends Controller
                 });
             }
 
-            if (isset($request->searchTerm) && !empty($request->searchTerm) && strlen($request->searchTerm) > 2) {
-                $query->whereLike(
-                    ['game_code', 'game_name', 'description', 'distribution', 'provider.name'],
-                    $request->searchTerm
-                );
+            $searchTerm = trim((string) $request->get('searchTerm', ''));
+
+            if ($searchTerm !== '') {
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('game_code', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('game_name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('description', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('distribution', 'like', '%' . $searchTerm . '%')
+                        ->orWhereHas('provider', function ($providerQuery) use ($searchTerm) {
+                            $providerQuery->where('name', 'like', '%' . $searchTerm . '%')
+                                ->orWhere('code', 'like', '%' . $searchTerm . '%');
+                        });
+                });
             } else {
                 $query->orderBy('views', 'desc');
             }
