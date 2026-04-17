@@ -14,6 +14,8 @@ class DatabaseSeeder extends Seeder
             CategoriesSeeder::class,
             GamesSeeder::class,
             CategoryGameSeeder::class,
+            TestUserSeeder::class,
+            TestWalletSeeder::class,
         ]);
     }
 }
