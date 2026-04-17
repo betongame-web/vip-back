@@ -15,6 +15,7 @@ use App\Traits\Providers\SalsaGamesTrait;
 use App\Traits\Providers\VibraTrait;
 use App\Traits\Providers\WorldSlotTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class GameController extends Controller
