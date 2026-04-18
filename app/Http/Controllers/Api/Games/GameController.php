@@ -23,85 +23,25 @@ class GameController extends Controller
     use KaGamingTrait, FiversTrait, VibraTrait, SalsaGamesTrait, WorldSlotTrait, Games2ApiTrait;
 
     protected function fallbackCover(): string
-{
-    return secure_url('/assets/images/FortuneTiger.webp');
-}
+    {
+        return secure_url('/assets/images/FortuneTiger.webp');
+    }
 
     protected function originalGameMap(): array
     {
         return [
-            [
-                'id' => 101,
-                'game_name' => 'Fortune Tiger',
-                'slug' => 'fortune-tiger',
-                'game_code' => 'fortunetiger',
-            ],
-            [
-                'id' => 102,
-                'game_name' => 'Fortune Rabbit',
-                'slug' => 'fortune-rabbit',
-                'game_code' => 'fortunerabbit',
-            ],
-            [
-                'id' => 103,
-                'game_name' => 'Fortune Ox',
-                'slug' => 'fortune-ox',
-                'game_code' => 'fortuneox',
-            ],
-            [
-                'id' => 104,
-                'game_name' => 'Fortune Panda',
-                'slug' => 'fortune-panda',
-                'game_code' => 'fortunepanda',
-            ],
-            [
-                'id' => 105,
-                'game_name' => 'Fortune Mouse',
-                'slug' => 'fortune-mouse',
-                'game_code' => 'fortunemouse',
-            ],
-            [
-                'id' => 106,
-                'game_name' => 'Treasures of Aztec',
-                'slug' => 'treasures-of-aztec',
-                'game_code' => 'treasuresofaztec',
-            ],
-            [
-                'id' => 201,
-                'game_name' => 'Phoenix Rises',
-                'slug' => 'phoenix-rises',
-                'game_code' => 'phoenixrises',
-            ],
-            [
-                'id' => 202,
-                'game_name' => 'Queen of Bounty',
-                'slug' => 'queen-of-bounty',
-                'game_code' => 'queenofbounty',
-            ],
-            [
-                'id' => 203,
-                'game_name' => 'Jack Frost',
-                'slug' => 'jack-frost',
-                'game_code' => 'jackfrost',
-            ],
-            [
-                'id' => 204,
-                'game_name' => 'Songkran Party',
-                'slug' => 'songkran-party',
-                'game_code' => 'songkranparty',
-            ],
-            [
-                'id' => 205,
-                'game_name' => 'Bikini Paradise',
-                'slug' => 'bikini-paradise',
-                'game_code' => 'bikiniparadise',
-            ],
-            [
-                'id' => 206,
-                'game_name' => 'Hood vs Woolf',
-                'slug' => 'hood-vs-woolf',
-                'game_code' => 'hoodvswoolf',
-            ],
+            ['id' => 101, 'game_name' => 'Fortune Tiger', 'slug' => 'fortune-tiger', 'game_code' => 'fortunetiger'],
+            ['id' => 102, 'game_name' => 'Fortune Rabbit', 'slug' => 'fortune-rabbit', 'game_code' => 'fortunerabbit'],
+            ['id' => 103, 'game_name' => 'Fortune Ox', 'slug' => 'fortune-ox', 'game_code' => 'fortuneox'],
+            ['id' => 104, 'game_name' => 'Fortune Panda', 'slug' => 'fortune-panda', 'game_code' => 'fortunepanda'],
+            ['id' => 105, 'game_name' => 'Fortune Mouse', 'slug' => 'fortune-mouse', 'game_code' => 'fortunemouse'],
+            ['id' => 106, 'game_name' => 'Treasures of Aztec', 'slug' => 'treasures-of-aztec', 'game_code' => 'treasuresofaztec'],
+            ['id' => 201, 'game_name' => 'Phoenix Rises', 'slug' => 'phoenix-rises', 'game_code' => 'phoenixrises'],
+            ['id' => 202, 'game_name' => 'Queen of Bounty', 'slug' => 'queen-of-bounty', 'game_code' => 'queenofbounty'],
+            ['id' => 203, 'game_name' => 'Jack Frost', 'slug' => 'jack-frost', 'game_code' => 'jackfrost'],
+            ['id' => 204, 'game_name' => 'Songkran Party', 'slug' => 'songkran-party', 'game_code' => 'songkranparty'],
+            ['id' => 205, 'game_name' => 'Bikini Paradise', 'slug' => 'bikini-paradise', 'game_code' => 'bikiniparadise'],
+            ['id' => 206, 'game_name' => 'Hood vs Woolf', 'slug' => 'hood-vs-woolf', 'game_code' => 'hoodvswoolf'],
         ];
     }
 
@@ -234,13 +174,13 @@ class GameController extends Controller
         return [
             'current_page' => 1,
             'data' => $games,
-            'first_page_url' => url('/api/games/all?page=1'),
+            'first_page_url' => url('/api/casinos/games?page=1'),
             'from' => count($games) ? 1 : null,
             'last_page' => 1,
-            'last_page_url' => url('/api/games/all?page=1'),
+            'last_page_url' => url('/api/casinos/games?page=1'),
             'links' => [],
             'next_page_url' => null,
-            'path' => url('/api/games/all'),
+            'path' => url('/api/casinos/games'),
             'per_page' => 12,
             'prev_page_url' => null,
             'to' => count($games),
@@ -466,59 +406,39 @@ class GameController extends Controller
     }
 
     public function show(string $id)
-{
-    try {
-        $game = Game::with(['categories', 'provider'])
-            ->whereStatus(1)
-            ->find($id);
+    {
+        try {
+            $game = Game::with(['categories', 'provider'])
+                ->whereStatus(1)
+                ->find($id);
 
-        if (!empty($game) && auth('api')->check()) {
-            $wallet = Wallet::where('user_id', auth('api')->id())->first();
+            if (!empty($game) && auth('api')->check()) {
+                $wallet = Wallet::where('user_id', auth('api')->id())->first();
 
-            $walletTotal = 0;
+                $walletTotal = 0;
 
-            if ($wallet) {
-                $walletTotal = (float) (
-                    $wallet->total_balance
-                    ?? (($wallet->balance ?? 0) + ($wallet->bonus_balance ?? 0) + ($wallet->withdrawable_balance ?? 0))
-                );
-            }
-
-            if ($wallet && $walletTotal > 0) {
-                $game->increment('views');
-
-                $token = \Helper::MakeToken([
-                    'id' => auth('api')->id(),
-                    'game' => $game->game_code,
-                ]);
-
-                if ($game->distribution === 'source') {
-                    return response()->json([
-                        'game' => $game,
-                        'gameUrl' => secure_url('/originals/' . $game->game_code . '/index.html?token=' . $token),
-                        'token' => $token,
-                    ], 200);
+                if ($wallet) {
+                    $walletTotal = (float) (
+                        $wallet->total_balance
+                        ?? (($wallet->balance ?? 0) + ($wallet->bonus_balance ?? 0) + ($wallet->withdrawable_balance ?? 0))
+                    );
                 }
-            }
-        }
-    } catch (Throwable $e) {
-        Log::error('GameController@show failed', [
-            'message' => $e->getMessage(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
-            'game_id' => $id,
-        ]);
-    }
 
-    $game = $this->fallbackSingleGame($id);
+                if ($wallet && $walletTotal > 0) {
+                    $game->increment('views');
 
-    return response()->json([
-        'game' => $game,
-        'gameUrl' => secure_url('/originals/' . $game['game_code'] . '/index.html?token=demo-token'),
-        'token' => 'demo-token',
-        'fallback' => true,
-    ], 200);
-}
+                    $token = \Helper::MakeToken([
+                        'id' => auth('api')->id(),
+                        'game' => $game->game_code,
+                    ]);
+
+                    if ($game->distribution === 'source') {
+                        return response()->json([
+                            'game' => $game,
+                            'gameUrl' => secure_url('/originals/' . $game->game_code . '/index.html?token=' . $token),
+                            'token' => $token,
+                        ], 200);
+                    }
                 }
             }
         } catch (Throwable $e) {
@@ -534,7 +454,7 @@ class GameController extends Controller
 
         return response()->json([
             'game' => $game,
-            'gameUrl' => url('/originals/' . $game['game_code'] . '/index.html?token=demo-token'),
+            'gameUrl' => secure_url('/originals/' . $game['game_code'] . '/index.html?token=demo-token'),
             'token' => 'demo-token',
             'fallback' => true,
         ], 200);
@@ -594,7 +514,6 @@ class GameController extends Controller
             ], 200);
         }
     }
-
     public function webhookGoldApiMethod(Request $request)
     {
         return self::WebhooksFivers($request);
