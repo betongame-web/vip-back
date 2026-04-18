@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('games')->group(function () {
     Route::get('all', [GameController::class, 'index']);
-    Route::get('single/{id}', [GameController::class, 'show'])->middleware('auth.jwt');
+    Route::get('single/{id}', [GameController::class, 'show']);
     Route::post('favorite/{id}', [GameController::class, 'toggleFavorite'])->middleware('auth.jwt');
     Route::post('like/{id}', [GameController::class, 'toggleLike'])->middleware('auth.jwt');
 });
