@@ -197,6 +197,13 @@ class GameController extends Controller
                 ->orderBy('name', 'desc')
                 ->get();
 
+            if ($providers->isEmpty()) {
+                return response()->json([
+                    'providers' => $this->fallbackProviders(),
+                    'fallback' => true,
+                ], 200);
+            }
+
             return response()->json(['providers' => $providers], 200);
         } catch (Throwable $e) {
             Log::error('GameController@index failed', [
@@ -215,36 +222,44 @@ class GameController extends Controller
     public function featured()
     {
         try {
-            $featuredGames = Game::query()
-                ->leftJoin('providers', 'providers.id', '=', 'games.provider_id')
-                ->where('games.is_featured', 1)
-                ->where('games.status', 1)
-                ->select([
-                    'games.id',
-                    'games.game_name',
-                    'games.slug',
-                    'games.game_code',
-                    'games.cover',
-                    'providers.id as provider_id',
-                    'providers.name as provider_name',
-                    'providers.code as provider_slug',
-                ])
+            $featuredGames = Game::with(['provider'])
+                ->where('is_featured', 1)
+                ->where('status', 1)
+                ->orderByDesc('id')
                 ->get()
                 ->map(function ($game) {
+                    $cover = $game->cover;
+
+                    if (!$cover) {
+                        $cover = $this->fallbackCover();
+                    } elseif (
+                        !str_starts_with($cover, 'http://') &&
+                        !str_starts_with($cover, 'https://')
+                    ) {
+                        $cover = secure_url($cover);
+                    }
+
                     return [
                         'id' => $game->id,
                         'game_name' => $game->game_name,
-                        'slug' => $game->slug,
+                        'slug' => $game->slug ?? \Illuminate\Support\Str::slug($game->game_name),
                         'game_code' => $game->game_code,
-                        'cover' => $game->cover ? url($game->cover) : $this->fallbackCover(),
+                        'cover' => $cover,
                         'provider' => [
-                            'id' => $game->provider_id,
-                            'name' => $game->provider_name,
-                            'slug' => $game->provider_slug,
+                            'id' => $game->provider->id ?? null,
+                            'name' => $game->provider->name ?? 'Original Game',
+                            'slug' => $game->provider->code ?? ($game->provider->slug ?? 'original-game'),
                         ],
                     ];
                 })
                 ->values();
+
+            if ($featuredGames->isEmpty()) {
+                return response()->json([
+                    'featured_games' => $this->fallbackFeaturedGames(),
+                    'fallback' => true,
+                ], 200);
+            }
 
             return response()->json([
                 'featured_games' => $featuredGames,
@@ -292,7 +307,9 @@ class GameController extends Controller
                 }
             }
 
-            return response()->json([], 500);
+            return response()->json([
+                'error' => 'Invalid game session',
+            ], 500);
         } catch (Throwable $e) {
             Log::error('GameController@sourceProvider failed', [
                 'message' => $e->getMessage(),
@@ -301,7 +318,9 @@ class GameController extends Controller
                 'action' => $action,
             ]);
 
-            return response()->json([], 500);
+            return response()->json([
+                'error' => 'Game provider error',
+            ], 500);
         }
     }
 
@@ -408,62 +427,82 @@ class GameController extends Controller
     public function show(string $id)
     {
         try {
+            if (!auth('api')->check()) {
+                return response()->json([
+                    'error' => 'unauthenticated',
+                ], 401);
+            }
+
             $game = Game::with(['categories', 'provider'])
-                ->whereStatus(1)
+                ->where('status', 1)
                 ->find($id);
 
-            if (!empty($game) && auth('api')->check()) {
-                $wallet = Wallet::where('user_id', auth('api')->id())->first();
-
-                $walletTotal = 0;
-
-                if ($wallet) {
-                    $walletTotal = (float) (
-                        $wallet->total_balance
-                        ?? (($wallet->balance ?? 0) + ($wallet->bonus_balance ?? 0) + ($wallet->withdrawable_balance ?? 0))
-                    );
-                }
-
-                if ($wallet && $walletTotal > 0) {
-                    $game->increment('views');
-
-                    $token = \Helper::MakeToken([
-                        'id' => auth('api')->id(),
-                        'game' => $game->game_code,
-                    ]);
-
-                    if ($game->distribution === 'source') {
-                        return response()->json([
-                            'game' => $game,
-                            'gameUrl' => secure_url('/originals/' . $game->game_code . '/index.html?token=' . $token),
-                            'token' => $token,
-                        ], 200);
-                    }
-                }
+            if (!$game) {
+                return response()->json([
+                    'error' => 'Game not found',
+                ], 404);
             }
+
+            $wallet = Wallet::where('user_id', auth('api')->id())
+                ->where('active', 1)
+                ->first();
+
+            if (!$wallet) {
+                return response()->json([
+                    'error' => 'Wallet not found',
+                ], 404);
+            }
+
+            $totalBalance =
+                (float) ($wallet->total_balance ?? 0) +
+                (float) ($wallet->balance ?? 0) +
+                (float) ($wallet->balance_bonus ?? 0);
+
+            if ($totalBalance <= 0) {
+                return response()->json([
+                    'action' => 'deposit',
+                    'error' => 'Insufficient balance',
+                ], 402);
+            }
+
+            $game->increment('views');
+
+            $token = \Helper::MakeToken([
+                'id' => auth('api')->id(),
+                'game' => $game->game_code,
+            ]);
+
+            if ($game->distribution !== 'source') {
+                return response()->json([
+                    'error' => 'Unsupported game distribution',
+                ], 422);
+            }
+
+            return response()->json([
+                'game' => $game,
+                'gameUrl' => secure_url('/originals/' . $game->game_code . '/index.html?token=' . $token),
+                'token' => $token,
+            ], 200);
         } catch (Throwable $e) {
             Log::error('GameController@show failed', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
                 'game_id' => $id,
+                'user_id' => auth('api')->id(),
             ]);
+
+            return response()->json([
+                'error' => 'Unable to load game',
+            ], 500);
         }
-
-        $game = $this->fallbackSingleGame($id);
-
-        return response()->json([
-            'game' => $game,
-            'gameUrl' => secure_url('/originals/' . $game['game_code'] . '/index.html?token=demo-token'),
-            'token' => 'demo-token',
-            'fallback' => true,
-        ], 200);
     }
 
     public function allGames(Request $request)
     {
         try {
-            $query = Game::query()->with(['provider', 'categories']);
+            $query = Game::query();
+            $query->with(['provider', 'categories']);
 
             if (!empty($request->provider) && $request->provider !== 'all') {
                 $query->where('provider_id', $request->provider);
@@ -475,18 +514,14 @@ class GameController extends Controller
                 });
             }
 
-            $searchTerm = trim((string) $request->get('searchTerm', ''));
+            if (isset($request->searchTerm) && !empty($request->searchTerm) && strlen($request->searchTerm) > 2) {
+                $search = trim((string) $request->searchTerm);
 
-            if ($searchTerm !== '') {
-                $query->where(function ($q) use ($searchTerm) {
-                    $q->where('game_code', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('game_name', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('description', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('distribution', 'like', '%' . $searchTerm . '%')
-                        ->orWhereHas('provider', function ($providerQuery) use ($searchTerm) {
-                            $providerQuery->where('name', 'like', '%' . $searchTerm . '%')
-                                ->orWhere('code', 'like', '%' . $searchTerm . '%');
-                        });
+                $query->where(function ($q) use ($search) {
+                    $q->where('game_code', 'like', "%{$search}%")
+                        ->orWhere('game_name', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%")
+                        ->orWhere('distribution', 'like', "%{$search}%");
                 });
             } else {
                 $query->orderBy('views', 'desc');
@@ -496,6 +531,13 @@ class GameController extends Controller
                 ->where('status', 1)
                 ->paginate(12)
                 ->appends(request()->query());
+
+            if ($games->isEmpty()) {
+                return response()->json([
+                    'games' => $this->fallbackGamesPaginated($request),
+                    'fallback' => true,
+                ], 200);
+            }
 
             return response()->json(['games' => $games], 200);
         } catch (Throwable $e) {
